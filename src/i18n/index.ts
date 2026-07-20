@@ -32,6 +32,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.alreadyAdded': 'Role {role} is already protected.',
     'protectedRoles.notFound': 'Role {role} is not in the protected list.',
     'protectedRoles.empty': 'no protected roles',
+    'protectedRoles.invalidId': 'Invalid role ID or mention.',
 
     'settings.thresholdSet': 'Threshold set to {value}.',
     'settings.thresholdShow': 'Current threshold: {threshold}.',
@@ -92,6 +93,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.alreadyAdded': 'Роль {role} уже в защищённых.',
     'protectedRoles.notFound': 'Роль {role} не найдена в защищённых.',
     'protectedRoles.empty': 'нет защищённых ролей',
+    'protectedRoles.invalidId': 'Неверный ID роли или упоминание.',
 
     'settings.thresholdSet': 'Порог установлен на {value}.',
     'settings.thresholdShow': 'Текущий порог: {threshold}.',
@@ -152,6 +154,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.alreadyAdded': 'Роль {role} вже у захищених.',
     'protectedRoles.notFound': 'Роль {role} не знайдено у захищених.',
     'protectedRoles.empty': 'немає захищених ролей',
+    'protectedRoles.invalidId': 'Неправильний ID ролі або згадка.',
 
     'settings.thresholdSet': 'Поріг встановлено на {value}.',
     'settings.thresholdShow': 'Поточний поріг: {threshold}.',

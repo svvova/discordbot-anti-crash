@@ -10,9 +10,8 @@ import { registerEventHandlers } from './events/index.js';
 import { settingsCommand } from './commands/settings.js';
 import { statsCommand } from './commands/stats.js';
 import { languageCommand } from './commands/language.js';
-import { protectedRolesCommand } from './commands/protectedroles.js';
 
-registerCommands([settingsCommand, statsCommand, languageCommand, protectedRolesCommand]);
+registerCommands([settingsCommand, statsCommand, languageCommand]);
 registerEventHandlers(client);
 
 client.on('interactionCreate', async (interaction) => {

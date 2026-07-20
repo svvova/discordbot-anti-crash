@@ -43,4 +43,21 @@ export const settingsData = new SlashCommandBuilder()
         opt.setName('mode').setDescription('Punishment mode').setRequired(true).addChoices(...punishmentChoices)
       )
   )
+  .addSubcommand((sub) =>
+    sub
+      .setName('protected-roles-add')
+      .setDescription('Add a role to protected list')
+      .addStringOption((opt) =>
+        opt.setName('role').setDescription('Role ID or mention').setRequired(true)
+      )
+  )
+  .addSubcommand((sub) =>
+    sub
+      .setName('protected-roles-remove')
+      .setDescription('Remove a role from protected list')
+      .addStringOption((opt) =>
+        opt.setName('role').setDescription('Role ID or mention').setRequired(true)
+      )
+  )
+  .addSubcommand((sub) => sub.setName('protected-roles-list').setDescription('List protected roles'))
   .addSubcommand((sub) => sub.setName('view').setDescription('View all settings'));

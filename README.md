@@ -115,9 +115,9 @@ After any code change, run `pnpm build` and then `pm2 restart anticrash-bot`.
 - `/settings logchannel-disable` — Disable the log channel.
 - `/settings recovery-toggle enabled:` — Enable or disable recovery.
 - `/settings punishment-mode mode:` — Set punishment mode.
-- `/protectedroles add role:` — Add a role to the protected list for `STRIP_ROLES` punishment.
-- `/protectedroles remove role:` — Remove a role from the protected list.
-- `/protectedroles list` — Show protected roles.
+- `/settings protected-roles-add role:` — Add a role ID/mention to protected list.
+- `/settings protected-roles-remove role:` — Remove a role from protected list.
+- `/settings protected-roles-list` — Show protected roles.
 - `/stats` — Show incident statistics for the server.
 - `/language code:` — Set the bot language (`en`, `ru`, `uk`).
 

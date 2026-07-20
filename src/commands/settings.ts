@@ -10,17 +10,18 @@ export const settingsCommand: Command = {
 
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = interaction.guild;
-    const lang: SupportedLanguage = guild ? ((await getSettings(guild.id)).language as SupportedLanguage) : 'en';
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     if (!guild || !interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
-      await interaction.editReply({ content: t(lang, 'common.adminOnly') });
+      await interaction.editReply({ content: t('en', 'common.adminOnly') });
       return;
     }
+
+    const s = await getSettings(guild.id);
+    const lang: SupportedLanguage = (s.language as SupportedLanguage) ?? 'en';
 
     const sub = interaction.options.getSubcommand(true);
 
     if (sub === 'view') {
-      const s = await getSettings(guild.id);
       const perms = checkBotPermissions(guild);
       const logChannel = s.logChannelId ? `<#${s.logChannelId}>` : t(lang, 'settings.view.logChannelDisabled');
       const missing = perms.length ? perms.join(', ') : t(lang, 'settings.view.none');
@@ -48,7 +49,6 @@ export const settingsCommand: Command = {
     }
 
     if (sub === 'threshold-show') {
-      const s = await getSettings(guild.id);
       await interaction.editReply({ content: t(lang, 'settings.thresholdShow', { threshold: s.threshold }) });
       return;
     }
@@ -85,6 +85,48 @@ export const settingsCommand: Command = {
       return;
     }
 
+    if (sub === 'protected-roles-add') {
+      const roleId = parseRoleId(interaction.options.getString('role', true));
+      if (!roleId) {
+        await interaction.editReply({ content: t(lang, 'protectedRoles.invalidId') });
+        return;
+      }
+      const protectedIds = new Set(s.protectedRoleIds);
+      if (protectedIds.has(roleId)) {
+        await interaction.editReply({ content: t(lang, 'protectedRoles.alreadyAdded', { role: `<@&${roleId}>` }) });
+        return;
+      }
+      protectedIds.add(roleId);
+      await upsertSettings(guild.id, { protectedRoleIds: Array.from(protectedIds) });
+      await interaction.editReply({ content: t(lang, 'protectedRoles.added', { role: `<@&${roleId}>` }) });
+      return;
+    }
+
+    if (sub === 'protected-roles-remove') {
+      const roleId = parseRoleId(interaction.options.getString('role', true));
+      if (!roleId) {
+        await interaction.editReply({ content: t(lang, 'protectedRoles.invalidId') });
+        return;
+      }
+      const protectedIds = new Set(s.protectedRoleIds);
+      if (!protectedIds.has(roleId)) {
+        await interaction.editReply({ content: t(lang, 'protectedRoles.notFound', { role: `<@&${roleId}>` }) });
+        return;
+      }
+      protectedIds.delete(roleId);
+      await upsertSettings(guild.id, { protectedRoleIds: Array.from(protectedIds) });
+      await interaction.editReply({ content: t(lang, 'protectedRoles.removed', { role: `<@&${roleId}>` }) });
+      return;
+    }
+
+    if (sub === 'protected-roles-list') {
+      const list = s.protectedRoleIds.length
+        ? s.protectedRoleIds.map((id: string) => `<@&${id}>`).join(', ')
+        : t(lang, 'protectedRoles.empty');
+      await interaction.editReply({ content: `${t(lang, 'protectedRoles.title')}:\n${list}` });
+      return;
+    }
+
     await interaction.editReply({ content: t(lang, 'commands.unknownSubcommand') });
   },
 };
@@ -106,4 +148,10 @@ function checkBotPermissions(guild: Guild): string[] {
     if (!me.permissions.has(perm)) missing.push(perm);
   }
   return missing;
+}
+
+function parseRoleId(input: string): string | null {
+  const clean = input.trim();
+  const match = clean.match(/^<@&(\d+)>$/) ?? clean.match(/^(\d{17,21})$/);
+  return match ? match[1] : null;
 }
