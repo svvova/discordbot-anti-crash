@@ -17,6 +17,7 @@ model ServerSettings {
   punishmentMode  String   @default("TIMEOUT")
   timeoutSeconds  Int      @default(3600)
   language        String   @default("en")
+  protectedRoleIds String[] @default([])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

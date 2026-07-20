@@ -3,8 +3,9 @@ import { env } from '../src/config/env.js';
 import { settingsData } from '../src/commands/settings.data.js';
 import { statsData } from '../src/commands/stats.data.js';
 import { languageData } from '../src/commands/language.data.js';
+import { protectedRolesData } from '../src/commands/protectedroles.data.js';
 
-const commands = [settingsData.toJSON(), statsData.toJSON(), languageData.toJSON()];
+const commands = [settingsData.toJSON(), statsData.toJSON(), languageData.toJSON(), protectedRolesData.toJSON()];
 const rest = new REST({ version: '10' }).setToken(env.DISCORD_TOKEN);
 
 (async () => {

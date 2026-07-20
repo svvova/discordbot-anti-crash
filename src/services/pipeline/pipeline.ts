@@ -82,7 +82,7 @@ async function processThresholdCrossing(
   guild: Guild,
   event: SecurityEvent & { executorId: string; auditLogEntryId: string },
   score: number,
-  settings: { threshold: number; logChannelId: string | null; punishmentMode: string; timeoutSeconds: number; recoveryEnabled: boolean },
+  settings: { threshold: number; logChannelId: string | null; punishmentMode: string; timeoutSeconds: number; recoveryEnabled: boolean; protectedRoleIds: string[] },
   recoveryResult?: { success: boolean; detail: string }
 ): Promise<void> {
   const lockKey = `anticrash:lock:punish:${guild.id}:${event.executorId}`;
@@ -93,7 +93,7 @@ async function processThresholdCrossing(
   }
 
   try {
-    const result = await applyPunishment(guild, event, settings.punishmentMode, settings.timeoutSeconds);
+    const result = await applyPunishment(guild, event, settings.punishmentMode, settings.timeoutSeconds, settings.protectedRoleIds);
     await persistIncident(event, score, settings.threshold, result, recoveryResult);
     await notifyLogChannel(client, guild, event, score, settings.threshold, result, recoveryResult);
     if (!recoveryResult) {

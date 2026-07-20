@@ -32,6 +32,7 @@ export const settingsCommand: Command = {
           `${t(lang, 'settings.view.recovery')}: ${s.recoveryEnabled}`,
           `${t(lang, 'settings.view.punishment')}: ${s.punishmentMode}`,
           `${t(lang, 'settings.view.timeout')}: ${s.timeoutSeconds}s`,
+          `${t(lang, 'settings.view.protectedRoles')}: ${s.protectedRoleIds.length ? s.protectedRoleIds.map((id: string) => `<@&${id}>`).join(', ') : t(lang, 'settings.view.none')}`,
           '',
           `${t(lang, 'settings.view.missingBotPerms')}: ${missing}`,
         ].join('\n'),

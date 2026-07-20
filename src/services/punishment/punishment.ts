@@ -1,4 +1,4 @@
-import type { Guild } from 'discord.js';
+import type { Guild, GuildMember } from 'discord.js';
 import { PunishmentMode } from '../../config/constants.js';
 import { prisma } from '../../infrastructure/prisma.js';
 import { logger } from '../../infrastructure/logger.js';
@@ -15,7 +15,8 @@ export async function applyPunishment(
   guild: Guild,
   event: CorrelatedSecurityEvent,
   mode: string,
-  timeoutSeconds: number
+  timeoutSeconds: number,
+  protectedRoleIds: string[]
 ): Promise<PunishmentResult> {
   const member = await guild.members.fetch(event.executorId).catch(() => null);
   if (!member) {
@@ -53,6 +54,11 @@ export async function applyPunishment(
         }
         await member.ban({ reason: 'Anti-crash threshold exceeded' });
         return { success: true, mode, detail: 'banned' };
+      case PunishmentMode.STRIP_ROLES:
+        if (!bot.permissions.has('ManageRoles')) {
+          return { success: false, mode, detail: 'missing_manage_roles_permission' };
+        }
+        return await stripRoles(member, bot, protectedRoleIds, mode);
       default:
         return { success: false, mode, detail: 'unknown_mode' };
     }
@@ -85,4 +91,42 @@ export async function persistIncident(
       metadata: event.raw as object,
     },
   });
+}
+
+async function stripRoles(
+  member: GuildMember,
+  bot: GuildMember,
+  protectedRoleIds: string[],
+  mode: string
+): Promise<PunishmentResult> {
+  const rolesToRemove = member.roles.cache
+    .filter(
+      (role) =>
+        role.id !== member.guild.id &&
+        !role.managed &&
+        !protectedRoleIds.includes(role.id) &&
+        role.position < bot.roles.highest.position
+    )
+    .sort((a, b) => b.position - a.position);
+
+  if (rolesToRemove.size === 0) {
+    return { success: true, mode, detail: 'no_roles_to_strip' };
+  }
+
+  let removed = 0;
+  let failed = 0;
+  for (const role of rolesToRemove.values()) {
+    try {
+      await member.roles.remove(role, 'Anti-crash strip roles');
+      removed++;
+    } catch (err) {
+      failed++;
+      logger.debug({ err, roleId: role.id, userId: member.id }, 'Failed to remove role');
+    }
+  }
+
+  if (failed > 0) {
+    return { success: false, mode, detail: `removed_${removed}_failed_${failed}` };
+  }
+  return { success: true, mode, detail: `removed_${removed}_roles` };
 }

@@ -3,6 +3,7 @@ export const PunishmentMode = {
   TIMEOUT: 'TIMEOUT',
   KICK: 'KICK',
   BAN: 'BAN',
+  STRIP_ROLES: 'STRIP_ROLES',
 } as const;
 
 export type PunishmentMode = (typeof PunishmentMode)[keyof typeof PunishmentMode];
