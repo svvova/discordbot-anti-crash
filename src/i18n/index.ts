@@ -57,6 +57,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'scoreUpdate.title': 'Score Update',
     'scoreUpdate.unknownExecutor': 'unknown',
+    'scoreUpdate.weight': 'Weight',
 
     'incident.title': 'Anti-Crash Alert',
     'incident.action': 'Action',
@@ -116,6 +117,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'scoreUpdate.title': 'Обновление счёта',
     'scoreUpdate.unknownExecutor': 'неизвестно',
+    'scoreUpdate.weight': 'Вес',
 
     'incident.title': 'Тревога Anti-Crash',
     'incident.action': 'Действие',
@@ -175,6 +177,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'scoreUpdate.title': 'Оновлення рахунку',
     'scoreUpdate.unknownExecutor': 'невідомо',
+    'scoreUpdate.weight': 'Вага',
 
     'incident.title': 'Тривога Anti-Crash',
     'incident.action': 'Дія',

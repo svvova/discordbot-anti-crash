@@ -1,5 +1,6 @@
 import { redis } from '../../infrastructure/redis.js';
 import { REDIS_NAMESPACE } from '../../config/constants.js';
+import { logger } from '../../infrastructure/logger.js';
 import type { CorrelatedSecurityEvent } from '../audit/types.js';
 
 const SCORE_SCRIPT = `
@@ -46,6 +47,10 @@ export async function addEventAndGetScore(event: CorrelatedSecurityEvent): Promi
     ttlMs
   )) as [number, number];
 
+  logger.debug(
+    { eventId: event.id, auditLogEntryId: event.auditLogEntryId, weight: event.weight, result },
+    'addEventAndGetScore result'
+  );
   if (result[0] === -1) {
     return 0;
   }

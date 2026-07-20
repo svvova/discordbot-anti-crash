@@ -74,6 +74,7 @@ export async function notifyScoreUpdate(
       { name: t(lang, 'incident.action'), value: event.action, inline: true },
       { name: t(lang, 'incident.executor'), value: event.executorId ? `<@${event.executorId}>` : t(lang, 'scoreUpdate.unknownExecutor'), inline: true },
       { name: t(lang, 'incident.target'), value: `${event.resourceType}${event.resourceId ? ` (${event.resourceId})` : ''}`, inline: true },
+      { name: t(lang, 'scoreUpdate.weight'), value: String(event.weight), inline: true },
       { name: t(lang, 'incident.scoreThreshold'), value: `${score} / ${threshold}`, inline: false }
     )
     .setTimestamp();

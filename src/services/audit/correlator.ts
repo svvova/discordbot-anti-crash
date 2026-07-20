@@ -85,9 +85,5 @@ function findMatchingEntry(
     if (exact) return { entry: exact };
   }
 
-  if (candidates.length === 1) {
-    return { entry: candidates[0] };
-  }
-
   return null;
 }
