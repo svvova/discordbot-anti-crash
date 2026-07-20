@@ -71,17 +71,26 @@ function findMatchingEntry(
   event: SecurityEvent,
   entries: Collection<string, GuildAuditLogsEntry>
 ): { entry: GuildAuditLogsEntry } | null {
-  const now = Date.now();
   const candidates: GuildAuditLogsEntry[] = [];
   for (const entry of entries.values()) {
     const entryTime = entry.createdTimestamp;
-    if (Math.abs(entryTime - now) <= 8000 || Math.abs(entryTime - event.timestamp) <= 8000) {
+    if (Math.abs(entryTime - event.timestamp) <= 5000) {
       candidates.push(entry);
     }
   }
 
   if (event.resourceId) {
-    const exact = candidates.find((e) => getTargetId(e) === event.resourceId);
+    let exact: GuildAuditLogsEntry | null = null;
+    let bestDiff = Infinity;
+    for (const entry of candidates) {
+      if (getTargetId(entry) === event.resourceId) {
+        const diff = Math.abs(entry.createdTimestamp - event.timestamp);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          exact = entry;
+        }
+      }
+    }
     if (exact) return { entry: exact };
   }
 
