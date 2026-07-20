@@ -47,6 +47,9 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'language.set': 'Language set to {language}.',
     'language.invalid': 'Invalid language. Supported: {languages}.',
 
+    'scoreUpdate.title': 'Score Update',
+    'scoreUpdate.unknownExecutor': 'unknown',
+
     'incident.title': 'Anti-Crash Alert',
     'incident.action': 'Action',
     'incident.executor': 'Executor',
@@ -95,6 +98,9 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'language.set': 'Язык установлен: {language}.',
     'language.invalid': 'Недопустимый язык. Поддерживаются: {languages}.',
 
+    'scoreUpdate.title': 'Обновление счёта',
+    'scoreUpdate.unknownExecutor': 'неизвестно',
+
     'incident.title': 'Тревога Anti-Crash',
     'incident.action': 'Действие',
     'incident.executor': 'Исполнитель',
@@ -142,6 +148,9 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'language.set': 'Мову встановлено: {language}.',
     'language.invalid': 'Неприпустима мова. Підтримуються: {languages}.',
+
+    'scoreUpdate.title': 'Оновлення рахунку',
+    'scoreUpdate.unknownExecutor': 'невідомо',
 
     'incident.title': 'Тривога Anti-Crash',
     'incident.action': 'Дія',

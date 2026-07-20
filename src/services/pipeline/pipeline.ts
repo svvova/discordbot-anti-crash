@@ -8,7 +8,7 @@ import { isRateLimited } from '../scoring/rate-limit.js';
 import { isImmune } from '../immunity/immunity.js';
 import { getSettings } from '../settings/settings.js';
 import { applyPunishment, persistIncident } from '../punishment/punishment.js';
-import { notifyLogChannel } from '../logging/logging.js';
+import { notifyLogChannel, notifyScoreUpdate } from '../logging/logging.js';
 import { createSnapshot } from '../recovery/snapshot.js';
 import { restoreResource } from '../recovery/restore.js';
 
@@ -65,9 +65,15 @@ export async function handleSecurityEvent(
   }
 
   const score = await addEventAndGetScore(correlated);
+  logger.debug(
+    { eventId: event.id, executorId: correlated.executorId, action: event.action, score },
+    'Score updated'
+  );
 
   if (score >= settings.threshold) {
     await processThresholdCrossing(client, guild, correlated, score, settings, recoveryResult);
+  } else {
+    await notifyScoreUpdate(client, guild, correlated, score, settings.threshold);
   }
 }
 
