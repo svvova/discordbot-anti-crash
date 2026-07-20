@@ -42,6 +42,10 @@ export async function correlate(event: SecurityEvent, guild: Guild): Promise<Cor
     try {
       const logs = await guild.fetchAuditLogs({ type: auditEvent, limit: 10 });
       const match = findMatchingEntry(event, logs.entries);
+      logger.debug(
+        { eventId: event.id, action: event.action, resourceId: event.resourceId, attempt, entries: logs.entries.size, match: match?.entry.id },
+        'Audit log correlation attempt'
+      );
       if (match) {
         return {
           event,
@@ -74,7 +78,7 @@ function findMatchingEntry(
   const candidates: GuildAuditLogsEntry[] = [];
   for (const entry of entries.values()) {
     const entryTime = entry.createdTimestamp;
-    if (Math.abs(entryTime - event.timestamp) <= 5000) {
+    if (Math.abs(entryTime - event.timestamp) <= 8000) {
       candidates.push(entry);
     }
   }
