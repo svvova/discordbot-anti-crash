@@ -23,18 +23,18 @@ redis.call('pexpire', key, ttl)
 
 local entries = redis.call('zrange', key, 0, -1, 'withscores')
 local total = 0
-for i = 2, #entries, 2 do
+for i = 1, #entries, 2 do
   local w = entries[i]:match(':(%d+)$')
   if w then total = total + tonumber(w) end
 end
 return {1, total}
 `;
 
-export async function addEventAndGetScore(event: CorrelatedSecurityEvent): Promise<number> {
+export async function addEventAndGetScore(event: CorrelatedSecurityEvent, windowSeconds: number = 60): Promise<number> {
   const key = `${REDIS_NAMESPACE}:score:${event.guildId}:${event.executorId}`;
   const dedupKey = `${REDIS_NAMESPACE}:dedup:${event.guildId}:${event.auditLogEntryId}`;
-  const windowMs = 60_000;
-  const ttlMs = 300_000;
+  const windowMs = windowSeconds * 1000;
+  const ttlMs = Math.max(windowMs * 5, 300_000);
   const result = (await redis.eval(
     SCORE_SCRIPT,
     2,
@@ -47,8 +47,8 @@ export async function addEventAndGetScore(event: CorrelatedSecurityEvent): Promi
     ttlMs
   )) as [number, number];
 
-  logger.debug(
-    { eventId: event.id, auditLogEntryId: event.auditLogEntryId, weight: event.weight, result },
+  logger.info(
+    { eventId: event.id, auditLogEntryId: event.auditLogEntryId, weight: event.weight, result, key, dedupKey },
     'addEventAndGetScore result'
   );
   if (result[0] === -1) {

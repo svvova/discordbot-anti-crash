@@ -70,7 +70,7 @@ export async function handleSecurityEvent(
     recoveryResult = await restoreResource(guild, event.resourceType, event.resourceId);
   }
 
-  const score = await addEventAndGetScore(correlated);
+  const score = await addEventAndGetScore(correlated, settings.windowSeconds);
   logger.info(
     { eventId: event.id, executorId: correlated.executorId, action: event.action, weight: event.weight, score, threshold: settings.threshold },
     'Score updated'
