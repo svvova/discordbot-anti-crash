@@ -114,6 +114,7 @@ After any code change, run `pnpm build` and then `pm2 restart anticrash-bot`.
 - `/settings logchannel-set channel:` — Set the alert log channel.
 - `/settings logchannel-disable` — Disable the log channel.
 - `/settings recovery-toggle enabled:` — Enable or disable recovery.
+- `/settings admin-immunity-toggle enabled:` — Enable or disable admin immunity.
 - `/settings punishment-mode mode:` — Set punishment mode.
 - `/settings protected-roles-add role:` — Add a role ID/mention to protected list.
 - `/settings protected-roles-remove role:` — Remove a role from protected list.

@@ -1,4 +1,4 @@
-import type { Client, Guild, GuildMember } from 'discord.js';
+import { PermissionFlagsBits, type Client, type Guild, type GuildMember } from 'discord.js';
 import { redis } from '../../infrastructure/redis.js';
 import { logger } from '../../infrastructure/logger.js';
 
@@ -7,7 +7,8 @@ const APP_OWNER_TTL_SECONDS = 300;
 export async function isImmune(
   client: Client,
   guild: Guild,
-  userId: string
+  userId: string,
+  options: { adminImmunityEnabled: boolean } = { adminImmunityEnabled: true }
 ): Promise<boolean> {
   if (userId === guild.ownerId) return true;
   if (userId === client.user?.id) return true;
@@ -20,7 +21,9 @@ export async function isImmune(
   }
 
   const member = await guild.members.fetch(userId).catch(() => null);
-  if (member && isHighestRole(member)) return true;
+  if (!member) return false;
+  if (options.adminImmunityEnabled && member.permissions.has(PermissionFlagsBits.Administrator)) return true;
+  if (isHighestRole(member)) return true;
 
   return false;
 }

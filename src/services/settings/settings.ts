@@ -20,6 +20,7 @@ function defaultSettings(): ServerSettings {
     punishmentMode: PunishmentMode.TIMEOUT,
     timeoutSeconds: DEFAULT_TIMEOUT_SECONDS,
     language: 'en',
+    adminImmunityEnabled: true,
     protectedRoleIds: [],
     createdAt: new Date(),
     updatedAt: new Date(),

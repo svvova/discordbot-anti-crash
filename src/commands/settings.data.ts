@@ -45,6 +45,12 @@ export const settingsData = new SlashCommandBuilder()
   )
   .addSubcommand((sub) =>
     sub
+      .setName('admin-immunity-toggle')
+      .setDescription('Enable or disable admin immunity')
+      .addBooleanOption((opt) => opt.setName('enabled').setDescription('Enable admin immunity').setRequired(true))
+  )
+  .addSubcommand((sub) =>
+    sub
       .setName('protected-roles-add')
       .setDescription('Add a role to protected list')
       .addStringOption((opt) =>

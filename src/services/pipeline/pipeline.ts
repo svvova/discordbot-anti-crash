@@ -27,7 +27,10 @@ export async function handleSecurityEvent(
     return;
   }
 
-  if (event.executorId && (await isImmune(client, guild, event.executorId))) {
+  const settings = await getSettings(event.guildId);
+  const immunityOptions = { adminImmunityEnabled: settings.adminImmunityEnabled };
+
+  if (event.executorId && (await isImmune(client, guild, event.executorId, immunityOptions))) {
     logger.debug({ eventId: event.id, executorId: event.executorId }, 'Executor is immune');
     return;
   }
@@ -47,12 +50,10 @@ export async function handleSecurityEvent(
     auditLogEntryId: correlation.correlationId,
   };
 
-  if (await isImmune(client, guild, correlated.executorId)) {
+  if (await isImmune(client, guild, correlated.executorId, immunityOptions)) {
     logger.debug({ eventId: event.id, executorId: correlated.executorId }, 'Correlated executor is immune');
     return;
   }
-
-  const settings = await getSettings(event.guildId);
 
   let recoveryResult: { success: boolean; detail: string } | undefined;
   if (
