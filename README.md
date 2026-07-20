@@ -111,6 +111,8 @@ After any code change, run `pnpm build` and then `pm2 restart anticrash-bot`.
 - `/settings view` — Show effective settings and missing bot permissions.
 - `/settings threshold-set value:` — Set the score threshold.
 - `/settings threshold-show` — Show the current threshold.
+- `/settings window-set seconds:` — Set the rolling score window in seconds.
+- `/settings window-show` — Show the current scoring window.
 - `/settings logchannel-set channel:` — Set the alert log channel.
 - `/settings logchannel-disable` — Disable the log channel.
 - `/settings recovery-toggle enabled:` — Enable or disable recovery.

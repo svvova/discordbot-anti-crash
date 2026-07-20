@@ -39,8 +39,8 @@ export async function handleSecurityEvent(
   const correlation = await correlate(event, guild);
   if (!correlation.executorId || !correlation.correlationId) {
     logger.info(
-      { eventId: event.id, reason: correlation.reason },
-      'No reliable executor correlation; skipping punishment'
+      { eventId: event.id, reason: correlation.reason, action: event.action, resourceId: event.resourceId },
+      'No reliable executor correlation; skipping score update'
     );
     return;
   }
@@ -50,9 +50,13 @@ export async function handleSecurityEvent(
     executorId: correlation.executorId,
     auditLogEntryId: correlation.correlationId,
   };
+  logger.info(
+    { eventId: event.id, executorId: correlated.executorId, correlationId: correlated.auditLogEntryId },
+    'Correlated event'
+  );
 
   if (await isImmune(client, guild, correlated.executorId, immunityOptions)) {
-    logger.debug({ eventId: event.id, executorId: correlated.executorId }, 'Correlated executor is immune');
+    logger.info({ eventId: event.id, executorId: correlated.executorId, adminImmunityEnabled: settings.adminImmunityEnabled }, 'Correlated executor is immune');
     return;
   }
 
@@ -67,8 +71,8 @@ export async function handleSecurityEvent(
   }
 
   const score = await addEventAndGetScore(correlated);
-  logger.debug(
-    { eventId: event.id, executorId: correlated.executorId, action: event.action, score },
+  logger.info(
+    { eventId: event.id, executorId: correlated.executorId, action: event.action, weight: event.weight, score, threshold: settings.threshold },
     'Score updated'
   );
 

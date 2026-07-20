@@ -81,6 +81,7 @@ export async function notifyScoreUpdate(
 
   try {
     await channel.send({ embeds: [embed] });
+    logger.info({ channelId: channel.id, guildId: guild.id, eventId: event.id }, 'Score update embed sent');
   } catch (err) {
     logger.error({ err, channelId: channel.id, guildId: guild.id }, 'Failed to send score update embed');
   }

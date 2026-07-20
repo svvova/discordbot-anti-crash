@@ -17,6 +17,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.view.title': 'Settings for {guild}',
     'settings.view.threshold': 'Threshold',
+    'settings.view.window': 'Scoring window',
     'settings.view.logChannel': 'Log channel',
     'settings.view.logChannelDisabled': 'disabled',
     'settings.view.recovery': 'Recovery',
@@ -37,6 +38,8 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.thresholdSet': 'Threshold set to {value}.',
     'settings.thresholdShow': 'Current threshold: {threshold}.',
+    'settings.windowSet': 'Scoring window set to {seconds}s.',
+    'settings.windowShow': 'Current scoring window: {window}s.',
     'settings.logChannelSet': 'Log channel set to {channel}.',
     'settings.logChannelDisable': 'Log channel disabled.',
     'settings.recoveryToggle': 'Recovery {state}.',
@@ -82,6 +85,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.view.title': 'Настройки {guild}',
     'settings.view.threshold': 'Порог',
+    'settings.view.window': 'Окно подсчёта',
     'settings.view.logChannel': 'Канал логов',
     'settings.view.logChannelDisabled': 'отключён',
     'settings.view.recovery': 'Восстановление',
@@ -102,6 +106,8 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.thresholdSet': 'Порог установлен на {value}.',
     'settings.thresholdShow': 'Текущий порог: {threshold}.',
+    'settings.windowSet': 'Окно подсчёта установлено на {seconds} сек.',
+    'settings.windowShow': 'Текущее окно подсчёта: {window} сек.',
     'settings.logChannelSet': 'Канал логов установлен: {channel}.',
     'settings.logChannelDisable': 'Канал логов отключён.',
     'settings.recoveryToggle': 'Восстановление {state}.',
@@ -147,6 +153,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.view.title': 'Налаштування {guild}',
     'settings.view.threshold': 'Поріг',
+    'settings.view.window': 'Вікно підрахунку',
     'settings.view.logChannel': 'Канал логів',
     'settings.view.logChannelDisabled': 'вимкнено',
     'settings.view.recovery': 'Відновлення',
@@ -167,6 +174,8 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
 
     'settings.thresholdSet': 'Поріг встановлено на {value}.',
     'settings.thresholdShow': 'Поточний поріг: {threshold}.',
+    'settings.windowSet': 'Вікно підрахунку встановлено на {seconds} сек.',
+    'settings.windowShow': 'Поточне вікно підрахунку: {window} сек.',
     'settings.logChannelSet': 'Канал логів встановлено: {channel}.',
     'settings.logChannelDisable': 'Канал логів вимкнено.',
     'settings.recoveryToggle': 'Відновлення {state}.',

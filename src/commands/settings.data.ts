@@ -18,6 +18,15 @@ export const settingsData = new SlashCommandBuilder()
   .addSubcommand((sub) => sub.setName('threshold-show').setDescription('Show current threshold'))
   .addSubcommand((sub) =>
     sub
+      .setName('window-set')
+      .setDescription('Set the scoring window in seconds')
+      .addIntegerOption((opt) =>
+        opt.setName('seconds').setDescription('Window in seconds').setRequired(true).setMinValue(1).setMaxValue(86400)
+      )
+  )
+  .addSubcommand((sub) => sub.setName('window-show').setDescription('Show current scoring window'))
+  .addSubcommand((sub) =>
+    sub
       .setName('logchannel-set')
       .setDescription('Set log channel')
       .addChannelOption((opt) =>

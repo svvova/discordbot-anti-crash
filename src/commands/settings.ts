@@ -29,6 +29,7 @@ export const settingsCommand: Command = {
         content: [
           `**${t(lang, 'settings.view.title', { guild: guild.name })}**`,
           `${t(lang, 'settings.view.threshold')}: ${s.threshold}`,
+          `${t(lang, 'settings.view.window')}: ${s.windowSeconds}s`,
           `${t(lang, 'settings.view.logChannel')}: ${logChannel}`,
           `${t(lang, 'settings.view.recovery')}: ${s.recoveryEnabled}`,
           `${t(lang, 'settings.view.adminImmunity')}: ${s.adminImmunityEnabled}`,
@@ -51,6 +52,18 @@ export const settingsCommand: Command = {
 
     if (sub === 'threshold-show') {
       await interaction.editReply({ content: t(lang, 'settings.thresholdShow', { threshold: s.threshold }) });
+      return;
+    }
+
+    if (sub === 'window-set') {
+      const seconds = interaction.options.getInteger('seconds', true);
+      await upsertSettings(guild.id, { windowSeconds: seconds });
+      await interaction.editReply({ content: t(lang, 'settings.windowSet', { seconds }) });
+      return;
+    }
+
+    if (sub === 'window-show') {
+      await interaction.editReply({ content: t(lang, 'settings.windowShow', { window: s.windowSeconds }) });
       return;
     }
 
