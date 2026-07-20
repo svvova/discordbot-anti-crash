@@ -3,6 +3,7 @@ import type { Client } from 'discord.js';
 import { AuditActionWeights } from '../config/constants.js';
 import type { SecurityEvent } from '../services/audit/types.js';
 import { randomUUID } from 'node:crypto';
+import { logger } from '../infrastructure/logger.js';
 
 function makeEvent(
   guildId: string,
@@ -63,7 +64,9 @@ export function registerEventHandlers(client: Client): void {
   client.on('guildMemberUpdate', (oldMember, newMember) => {
     const oldRoles = oldMember.roles.cache.map((r) => r.id);
     const newRoles = newMember.roles.cache.map((r) => r.id);
-    if (JSON.stringify(oldRoles) !== JSON.stringify(newRoles)) {
+    const changed = JSON.stringify(oldRoles) !== JSON.stringify(newRoles);
+    logger.info({ userId: newMember.id, guildId: newMember.guild.id, changed }, 'guildMemberUpdate received');
+    if (changed) {
       void handleSecurityEvent(client, makeEvent(newMember.guild.id, 'MEMBER_ROLE_UPDATE', 'MEMBER', newMember.id, { oldRoles, newRoles }));
     }
   });

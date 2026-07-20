@@ -16,6 +16,7 @@ export async function handleSecurityEvent(
   client: Client,
   event: SecurityEvent
 ): Promise<void> {
+  logger.info({ eventId: event.id, action: event.action, resourceId: event.resourceId, executorId: event.executorId }, 'handleSecurityEvent called');
   const guild = client.guilds.cache.get(event.guildId);
   if (!guild) {
     logger.debug({ eventId: event.id, guildId: event.guildId }, 'Guild not available for event');
