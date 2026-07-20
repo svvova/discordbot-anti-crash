@@ -1,0 +1,39 @@
+export const PunishmentMode = {
+  WARN: 'WARN',
+  TIMEOUT: 'TIMEOUT',
+  KICK: 'KICK',
+  BAN: 'BAN',
+} as const;
+
+export type PunishmentMode = (typeof PunishmentMode)[keyof typeof PunishmentMode];
+
+export const DEFAULT_THRESHOLD = 100;
+export const DEFAULT_WINDOW_SECONDS = 60;
+export const DEFAULT_TIMEOUT_SECONDS = 3600;
+
+export const REDIS_NAMESPACE = 'anticrash';
+
+export const AuditActionWeights: Record<string, number> = {
+  GUILD_UPDATE: 40,
+  ROLE_CREATE: 10,
+  ROLE_DELETE: 15,
+  ROLE_UPDATE: 10,
+  CHANNEL_CREATE: 5,
+  CHANNEL_DELETE: 20,
+  CHANNEL_UPDATE: 10,
+  CHANNEL_OVERWRITE_CREATE: 10,
+  CHANNEL_OVERWRITE_UPDATE: 15,
+  CHANNEL_OVERWRITE_DELETE: 15,
+  WEBHOOK_CREATE: 15,
+  WEBHOOK_DELETE: 15,
+  WEBHOOK_UPDATE: 10,
+  MEMBER_ROLE_UPDATE: 10,
+  MEMBER_BAN_ADD: 25,
+  MEMBER_KICK: 20,
+  EMOJI_CREATE: 5,
+  EMOJI_DELETE: 10,
+  EMOJI_UPDATE: 5,
+  STICKER_CREATE: 5,
+  STICKER_DELETE: 10,
+  STICKER_UPDATE: 5,
+};

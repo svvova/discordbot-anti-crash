@@ -1,0 +1,51 @@
+{
+  "name": "simple-anti-crash-bot",
+  "version": "0.1.0",
+  "description": "Production-ready open-source Anti-Nuke Discord bot",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "commands:deploy": "tsx scripts/deploy-commands.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "discord.js": "^14.18.0",
+    "dotenv": "^17.4.2",
+    "ioredis": "^5.5.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.21.0",
+    "prettier": "^3.5.2",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0",
+    "vitest": "^3.0.7"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "anti-nuke",
+    "anti-crash",
+    "moderation"
+  ],
+  "license": "MIT",
+  "private": false
+}

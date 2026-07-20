@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ServerSettings {
+  id              String   @id @default(cuid())
+  guildId         String   @unique
+  threshold       Int      @default(100)
+  windowSeconds   Int      @default(60)
+  logChannelId    String?
+  recoveryEnabled Boolean  @default(true)
+  punishmentMode  String   @default("TIMEOUT")
+  timeoutSeconds  Int      @default(3600)
+  language        String   @default("en")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([guildId])
+}
+
+enum ResourceType {
+  CHANNEL
+  ROLE
+  WEBHOOK
+  EMOJI
+  STICKER
+}
+
+model ResourceSnapshot {
+  id           String       @id @default(cuid())
+  guildId      String
+  resourceType ResourceType
+  resourceId   String
+  payload      Json
+  version      Int          @default(1)
+  createdAt    DateTime     @default(now())
+
+  @@unique([guildId, resourceType, resourceId])
+  @@index([guildId, resourceType, createdAt])
+}
+
+model Incident {
+  id                String   @id @default(cuid())
+  guildId           String
+  executorId        String?
+  action            String
+  targetType        String?
+  targetId          String?
+  score             Int
+  threshold         Int
+  punishmentResult  String?
+  recoveryResult    String?
+  metadata          Json?
+  createdAt         DateTime @default(now())
+
+  @@index([guildId, createdAt])
+  @@index([guildId, action, createdAt])
+  @@index([executorId])
+}
