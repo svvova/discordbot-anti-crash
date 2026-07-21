@@ -33,6 +33,7 @@ export const settingsCommand: Command = {
           `${t(lang, 'settings.view.logChannel')}: ${logChannel}`,
           `${t(lang, 'settings.view.recovery')}: ${s.recoveryEnabled}`,
           `${t(lang, 'settings.view.adminImmunity')}: ${s.adminImmunityEnabled}`,
+          `${t(lang, 'settings.view.ignoreBots')}: ${s.ignoreBots}`,
           `${t(lang, 'settings.view.punishment')}: ${s.punishmentMode}`,
           `${t(lang, 'settings.view.timeout')}: ${s.timeoutSeconds}s`,
           `${t(lang, 'settings.view.protectedRoles')}: ${s.protectedRoleIds.length ? s.protectedRoleIds.map((id: string) => `<@&${id}>`).join(', ') : t(lang, 'settings.view.none')}`,
@@ -104,6 +105,14 @@ export const settingsCommand: Command = {
       await upsertSettings(guild.id, { adminImmunityEnabled: enabled });
       const stateKey = enabled ? 'settings.adminImmunityEnabled' : 'settings.adminImmunityDisabled';
       await interaction.editReply({ content: t(lang, 'settings.adminImmunityToggle', { state: t(lang, stateKey) }) });
+      return;
+    }
+
+    if (sub === 'ignore-bots-toggle') {
+      const enabled = interaction.options.getBoolean('enabled', true);
+      await upsertSettings(guild.id, { ignoreBots: enabled });
+      const stateKey = enabled ? 'settings.ignoreBotsEnabled' : 'settings.ignoreBotsDisabled';
+      await interaction.editReply({ content: t(lang, 'settings.ignoreBotsToggle', { state: t(lang, stateKey) }) });
       return;
     }
 

@@ -18,6 +18,7 @@ model ServerSettings {
   timeoutSeconds  Int      @default(3600)
   language        String   @default("en")
   adminImmunityEnabled Boolean  @default(true)
+  ignoreBots        Boolean  @default(true)
   protectedRoleIds String[] @default([])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

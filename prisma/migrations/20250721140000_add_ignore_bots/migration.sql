@@ -1,0 +1,1 @@
+ALTER TABLE "ServerSettings" ADD COLUMN "ignoreBots" BOOLEAN NOT NULL DEFAULT true;

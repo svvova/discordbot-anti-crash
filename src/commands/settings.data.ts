@@ -60,6 +60,12 @@ export const settingsData = new SlashCommandBuilder()
   )
   .addSubcommand((sub) =>
     sub
+      .setName('ignore-bots-toggle')
+      .setDescription('Enable or disable ignoring bot accounts')
+      .addBooleanOption((opt) => opt.setName('enabled').setDescription('Enable ignoring bots').setRequired(true))
+  )
+  .addSubcommand((sub) =>
+    sub
       .setName('protected-roles-add')
       .setDescription('Add a role to protected list')
       .addStringOption((opt) =>

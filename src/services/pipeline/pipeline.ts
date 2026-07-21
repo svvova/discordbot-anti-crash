@@ -60,6 +60,14 @@ export async function handleSecurityEvent(
     return;
   }
 
+  if (settings.ignoreBots) {
+    const executorMember = await guild.members.fetch(correlated.executorId).catch(() => null);
+    if (executorMember?.user.bot) {
+      logger.info({ eventId: event.id, executorId: correlated.executorId }, 'Executor is a bot and ignoreBots is enabled; skipping');
+      return;
+    }
+  }
+
   let recoveryResult: { success: boolean; detail: string } | undefined;
   if (
     settings.recoveryEnabled &&

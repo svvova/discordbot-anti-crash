@@ -21,6 +21,7 @@ function defaultSettings(): ServerSettings {
     timeoutSeconds: DEFAULT_TIMEOUT_SECONDS,
     language: 'en',
     adminImmunityEnabled: true,
+    ignoreBots: true,
     protectedRoleIds: [],
     createdAt: new Date(),
     updatedAt: new Date(),
