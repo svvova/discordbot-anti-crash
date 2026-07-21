@@ -1,4 +1,4 @@
-import type { Guild, NonThreadGuildBasedChannel, Role } from 'discord.js';
+import type { Guild, GuildEmoji, NonThreadGuildBasedChannel, Role, Sticker } from 'discord.js';
 import { prisma } from '../../infrastructure/prisma.js';
 import { logger } from '../../infrastructure/logger.js';
 
@@ -15,6 +15,14 @@ export async function createSnapshot(
     const role = guild.roles.cache.get(resourceId);
     if (!role || role.managed) return;
     await saveRoleSnapshot(guild.id, role);
+  } else if (resourceType === 'EMOJI' && resourceId) {
+    const emoji = guild.emojis.cache.get(resourceId);
+    if (!emoji) return;
+    await saveEmojiSnapshot(guild.id, emoji);
+  } else if (resourceType === 'STICKER' && resourceId) {
+    const sticker = guild.stickers.cache.get(resourceId);
+    if (!sticker) return;
+    await saveStickerSnapshot(guild.id, sticker);
   } else if (resourceType === 'GUILD') {
     await Promise.all(
       guild.roles.cache
@@ -26,10 +34,16 @@ export async function createSnapshot(
         .filter((c) => !c.isThread())
         .map((channel) => saveChannelSnapshot(guild.id, channel as NonThreadGuildBasedChannel))
     );
+    await Promise.all(
+      guild.emojis.cache.map((emoji) => saveEmojiSnapshot(guild.id, emoji))
+    );
+    await Promise.all(
+      guild.stickers.cache.map((sticker) => saveStickerSnapshot(guild.id, sticker))
+    );
   }
 }
 
-async function saveChannelSnapshot(guildId: string, channel: NonThreadGuildBasedChannel): Promise<void> {
+export async function saveChannelSnapshot(guildId: string, channel: NonThreadGuildBasedChannel): Promise<void> {
   const payload = {
     type: channel.type,
     name: channel.name,
@@ -50,7 +64,7 @@ async function saveChannelSnapshot(guildId: string, channel: NonThreadGuildBased
   await upsertSnapshot(guildId, 'CHANNEL', channel.id, payload);
 }
 
-async function saveRoleSnapshot(guildId: string, role: Role): Promise<void> {
+export async function saveRoleSnapshot(guildId: string, role: Role): Promise<void> {
   const payload = {
     name: role.name,
     color: role.color,
@@ -62,9 +76,30 @@ async function saveRoleSnapshot(guildId: string, role: Role): Promise<void> {
   await upsertSnapshot(guildId, 'ROLE', role.id, payload);
 }
 
+export async function saveEmojiSnapshot(guildId: string, emoji: GuildEmoji): Promise<void> {
+  const payload = {
+    name: emoji.name,
+    animated: emoji.animated,
+    url: emoji.url,
+    roles: emoji.roles.cache.map((r) => r.id),
+  };
+  await upsertSnapshot(guildId, 'EMOJI', emoji.id, payload);
+}
+
+export async function saveStickerSnapshot(guildId: string, sticker: Sticker): Promise<void> {
+  const payload = {
+    name: sticker.name,
+    description: sticker.description,
+    tags: sticker.tags,
+    format: sticker.format,
+    url: sticker.url,
+  };
+  await upsertSnapshot(guildId, 'STICKER', sticker.id, payload);
+}
+
 async function upsertSnapshot(
   guildId: string,
-  resourceType: 'CHANNEL' | 'ROLE',
+  resourceType: 'CHANNEL' | 'ROLE' | 'EMOJI' | 'STICKER',
   resourceId: string,
   payload: unknown
 ): Promise<void> {

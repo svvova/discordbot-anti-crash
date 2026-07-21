@@ -26,6 +26,21 @@ interface RoleSnapshot {
   position: number;
 }
 
+interface EmojiSnapshot {
+  name: string;
+  animated: boolean;
+  url: string;
+  roles: string[];
+}
+
+interface StickerSnapshot {
+  name: string;
+  description: string | null;
+  tags: string;
+  format: number;
+  url: string;
+}
+
 const RECOVERY_LOCK_PREFIX = 'anticrash:lock:recovery';
 const RECOVERY_LOCK_TTL_MS = 60_000;
 
@@ -37,7 +52,7 @@ export async function acquireRecoveryLock(guildId: string, resourceType: string,
 
 export async function restoreResource(
   guild: Guild,
-  resourceType: 'CHANNEL' | 'ROLE',
+  resourceType: 'CHANNEL' | 'ROLE' | 'EMOJI' | 'STICKER',
   resourceId: string
 ): Promise<{ success: boolean; detail: string; newId?: string }> {
   const lockAcquired = await acquireRecoveryLock(guild.id, resourceType, resourceId);
@@ -64,6 +79,14 @@ export async function restoreResource(
 
     if (resourceType === 'ROLE') {
       return await restoreRole(guild, resourceId, snapshot.payload as unknown as RoleSnapshot, me.roles.highest.position);
+    }
+
+    if (resourceType === 'EMOJI') {
+      return await restoreEmoji(guild, resourceId, snapshot.payload as unknown as EmojiSnapshot, me.permissions);
+    }
+
+    if (resourceType === 'STICKER') {
+      return await restoreSticker(guild, resourceId, snapshot.payload as unknown as StickerSnapshot, me.permissions);
     }
 
     return { success: false, detail: 'unsupported_resource_type' };
@@ -167,5 +190,100 @@ async function restoreRole(
   } catch (err) {
     logger.error({ err, guildId: guild.id, originalId }, 'Role restore failed');
     return { success: false, detail: 'role_create_error' };
+  }
+}
+
+async function restoreEmoji(
+  guild: Guild,
+  originalId: string,
+  snapshot: EmojiSnapshot,
+  botPermissions: { has: (bit: bigint) => boolean } | null
+): Promise<{ success: boolean; detail: string; newId?: string }> {
+  if (!botPermissions?.has(PermissionFlagsBits.ManageGuildExpressions)) {
+    return { success: false, detail: 'missing_manage_emojis' };
+  }
+
+  try {
+    const response = await fetch(snapshot.url);
+    if (!response.ok) {
+      return { success: false, detail: 'emoji_image_fetch_failed' };
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    const created = await guild.emojis.create({
+      attachment: buffer,
+      name: snapshot.name,
+      roles: snapshot.roles,
+    });
+
+    await prisma.resourceSnapshot.upsert({
+      where: {
+        guildId_resourceType_resourceId: { guildId: guild.id, resourceType: 'EMOJI', resourceId: originalId },
+      },
+      create: {
+        guildId: guild.id,
+        resourceType: 'EMOJI',
+        resourceId: originalId,
+        payload: { ...snapshot, restoredId: created.id } as object,
+        version: 1,
+      },
+      update: {
+        payload: { ...snapshot, restoredId: created.id } as object,
+        version: { increment: 1 },
+      },
+    });
+
+    return { success: true, detail: 'emoji_created', newId: created.id };
+  } catch (err) {
+    logger.error({ err, guildId: guild.id, originalId }, 'Emoji restore failed');
+    return { success: false, detail: 'emoji_create_error' };
+  }
+}
+
+async function restoreSticker(
+  guild: Guild,
+  originalId: string,
+  snapshot: StickerSnapshot,
+  botPermissions: { has: (bit: bigint) => boolean } | null
+): Promise<{ success: boolean; detail: string; newId?: string }> {
+  if (!botPermissions?.has(PermissionFlagsBits.ManageGuildExpressions)) {
+    return { success: false, detail: 'missing_manage_stickers' };
+  }
+
+  try {
+    const response = await fetch(snapshot.url);
+    if (!response.ok) {
+      return { success: false, detail: 'sticker_image_fetch_failed' };
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    const created = await guild.stickers.create({
+      file: buffer,
+      name: snapshot.name,
+      tags: snapshot.tags,
+      description: snapshot.description ?? undefined,
+    });
+
+    await prisma.resourceSnapshot.upsert({
+      where: {
+        guildId_resourceType_resourceId: { guildId: guild.id, resourceType: 'STICKER', resourceId: originalId },
+      },
+      create: {
+        guildId: guild.id,
+        resourceType: 'STICKER',
+        resourceId: originalId,
+        payload: { ...snapshot, restoredId: created.id } as object,
+        version: 1,
+      },
+      update: {
+        payload: { ...snapshot, restoredId: created.id } as object,
+        version: { increment: 1 },
+      },
+    });
+
+    return { success: true, detail: 'sticker_created', newId: created.id };
+  } catch (err) {
+    logger.error({ err, guildId: guild.id, originalId }, 'Sticker restore failed');
+    return { success: false, detail: 'sticker_create_error' };
   }
 }

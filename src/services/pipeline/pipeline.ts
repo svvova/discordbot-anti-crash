@@ -9,7 +9,6 @@ import { isImmune } from '../immunity/immunity.js';
 import { getSettings } from '../settings/settings.js';
 import { applyPunishment, persistIncident } from '../punishment/punishment.js';
 import { notifyLogChannel, notifyScoreUpdate } from '../logging/logging.js';
-import { createSnapshot } from '../recovery/snapshot.js';
 import { restoreResource } from '../recovery/restore.js';
 
 export async function handleSecurityEvent(
@@ -71,11 +70,11 @@ export async function handleSecurityEvent(
   let recoveryResult: { success: boolean; detail: string } | undefined;
   if (
     settings.recoveryEnabled &&
-    (event.action === 'CHANNEL_DELETE' || event.action === 'ROLE_DELETE') &&
+    (event.action === 'CHANNEL_DELETE' || event.action === 'ROLE_DELETE' || event.action === 'EMOJI_DELETE' || event.action === 'STICKER_DELETE') &&
     event.resourceId &&
-    (event.resourceType === 'CHANNEL' || event.resourceType === 'ROLE')
+    (event.resourceType === 'CHANNEL' || event.resourceType === 'ROLE' || event.resourceType === 'EMOJI' || event.resourceType === 'STICKER')
   ) {
-    recoveryResult = await restoreResource(guild, event.resourceType, event.resourceId);
+    recoveryResult = await restoreResource(guild, event.resourceType as 'CHANNEL' | 'ROLE' | 'EMOJI' | 'STICKER', event.resourceId);
   }
 
   const score = await addEventAndGetScore(correlated, settings.windowSeconds);
@@ -110,9 +109,6 @@ async function processThresholdCrossing(
     const result = await applyPunishment(guild, event, settings.punishmentMode, settings.timeoutSeconds, settings.protectedRoleIds);
     await persistIncident(event, score, settings.threshold, result, recoveryResult);
     await notifyLogChannel(client, guild, event, score, settings.threshold, result, recoveryResult);
-    if (!recoveryResult) {
-      await createSnapshot(guild, event.resourceType, event.resourceId);
-    }
   } finally {
     await redis.del(lockKey);
   }

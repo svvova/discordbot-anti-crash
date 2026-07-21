@@ -1,6 +1,7 @@
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import { logger } from './infrastructure/logger.js';
 import type { Command } from './commands/types.js';
+import { createSnapshot } from './services/recovery/snapshot.js';
 
 export const client = new Client({
   intents: [
@@ -22,6 +23,17 @@ export function registerCommands(commands: Command[]): void {
 
 client.on('clientReady', () => {
   logger.info({ user: client.user?.tag, id: client.user?.id }, 'Bot ready');
+  for (const guild of client.guilds.cache.values()) {
+    void createSnapshot(guild, 'GUILD').catch((e) =>
+      logger.error({ err: e, guildId: guild.id }, 'Initial guild snapshot failed')
+    );
+  }
+});
+
+client.on('guildCreate', (guild) => {
+  void createSnapshot(guild, 'GUILD').catch((e) =>
+    logger.error({ err: e, guildId: guild.id }, 'Guild create snapshot failed')
+  );
 });
 
 client.on('error', (err) => {

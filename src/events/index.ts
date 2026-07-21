@@ -4,6 +4,7 @@ import { AuditActionWeights } from '../config/constants.js';
 import type { SecurityEvent } from '../services/audit/types.js';
 import { randomUUID } from 'node:crypto';
 import { logger } from '../infrastructure/logger.js';
+import { saveChannelSnapshot, saveRoleSnapshot, saveEmojiSnapshot, saveStickerSnapshot } from '../services/recovery/snapshot.js';
 
 function makeEvent(
   guildId: string,
@@ -35,29 +36,35 @@ export function registerEventHandlers(client: Client): void {
   });
 
   client.on('roleCreate', (role) => {
+    if (!role.managed) void saveRoleSnapshot(role.guild.id, role).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(role.guild.id, 'ROLE_CREATE', 'ROLE', role.id, { name: role.name }));
   });
 
   client.on('roleDelete', (role) => {
+    if (!role.managed) void saveRoleSnapshot(role.guild.id, role).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(role.guild.id, 'ROLE_DELETE', 'ROLE', role.id, { name: role.name }));
   });
 
   client.on('roleUpdate', (oldRole, newRole) => {
+    if (!newRole.managed) void saveRoleSnapshot(newRole.guild.id, newRole).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(newRole.guild.id, 'ROLE_UPDATE', 'ROLE', newRole.id, { old: oldRole.name, new: newRole.name }));
   });
 
   client.on('channelCreate', (channel) => {
     if (!('guild' in channel) || channel.isThread() || channel.isDMBased()) return;
+    void saveChannelSnapshot(channel.guild.id, channel).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(channel.guild.id, 'CHANNEL_CREATE', 'CHANNEL', channel.id, { name: getChannelName(channel) }));
   });
 
   client.on('channelDelete', (channel) => {
     if (!('guild' in channel) || channel.isThread() || channel.isDMBased()) return;
+    void saveChannelSnapshot(channel.guild.id, channel).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(channel.guild.id, 'CHANNEL_DELETE', 'CHANNEL', channel.id, { name: getChannelName(channel) }));
   });
 
   client.on('channelUpdate', (oldChannel, newChannel) => {
     if (!('guild' in newChannel) || newChannel.isThread() || newChannel.isDMBased() || oldChannel.isDMBased()) return;
+    void saveChannelSnapshot(newChannel.guild.id, newChannel).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(newChannel.guild.id, 'CHANNEL_UPDATE', 'CHANNEL', newChannel.id, { old: getChannelName(oldChannel), new: getChannelName(newChannel) }));
   });
 
@@ -81,31 +88,37 @@ export function registerEventHandlers(client: Client): void {
 
   client.on('emojiCreate', (emoji) => {
     if (!emoji.guild) return;
+    void saveEmojiSnapshot(emoji.guild.id, emoji).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(emoji.guild.id, 'EMOJI_CREATE', 'EMOJI', emoji.id, { name: emoji.name }));
   });
 
   client.on('emojiDelete', (emoji) => {
     if (!emoji.guild) return;
+    void saveEmojiSnapshot(emoji.guild.id, emoji).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(emoji.guild.id, 'EMOJI_DELETE', 'EMOJI', emoji.id, { name: emoji.name }));
   });
 
   client.on('emojiUpdate', (oldEmoji, newEmoji) => {
     if (!newEmoji.guild) return;
+    void saveEmojiSnapshot(newEmoji.guild.id, newEmoji).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(newEmoji.guild.id, 'EMOJI_UPDATE', 'EMOJI', newEmoji.id, { old: oldEmoji.name, new: newEmoji.name }));
   });
 
   client.on('stickerCreate', (sticker) => {
     if (!sticker.guild) return;
+    void saveStickerSnapshot(sticker.guild.id, sticker).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(sticker.guild.id, 'STICKER_CREATE', 'STICKER', sticker.id, { name: sticker.name }));
   });
 
   client.on('stickerDelete', (sticker) => {
     if (!sticker.guild) return;
+    void saveStickerSnapshot(sticker.guild.id, sticker).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(sticker.guild.id, 'STICKER_DELETE', 'STICKER', sticker.id, { name: sticker.name }));
   });
 
   client.on('stickerUpdate', (oldSticker, newSticker) => {
     if (!newSticker.guild) return;
+    void saveStickerSnapshot(newSticker.guild.id, newSticker).catch((e) => logger.error({ err: e }, 'Snapshot save failed'));
     void handleSecurityEvent(client, makeEvent(newSticker.guild.id, 'STICKER_UPDATE', 'STICKER', newSticker.id, { old: oldSticker.name, new: newSticker.name }));
   });
 
