@@ -30,6 +30,8 @@ function getChannelName(channel: { name?: string }): string | undefined {
   return channel.name;
 }
 
+const webhookCache = new Map<string, Map<string, string>>();
+
 export function registerEventHandlers(client: Client): void {
   client.on('guildUpdate', (oldGuild, newGuild) => {
     void handleSecurityEvent(client, makeEvent(newGuild.id, 'GUILD_UPDATE', 'GUILD', newGuild.id, { old: oldGuild.name, new: newGuild.name }));
@@ -122,7 +124,42 @@ export function registerEventHandlers(client: Client): void {
     void handleSecurityEvent(client, makeEvent(newSticker.guild.id, 'STICKER_UPDATE', 'STICKER', newSticker.id, { old: oldSticker.name, new: newSticker.name }));
   });
 
-  client.on('webhooksUpdate', ({ guild }) => {
-    void handleSecurityEvent(client, makeEvent(guild.id, 'WEBHOOK_CHANGE', 'WEBHOOK', undefined, {}));
+  client.on('webhooksUpdate', (channel) => {
+    void handleWebhooksUpdate(client, channel);
   });
+}
+
+async function handleWebhooksUpdate(client: Client, channel: { id: string; guild: { id: string }; fetchWebhooks?: () => Promise<Map<string, { id: string; name: string | null }> | { values: () => IterableIterator<{ id: string; name: string | null }> }> }): Promise<void> {
+  if (typeof channel.fetchWebhooks !== 'function') return;
+
+  let current: Map<string, string>;
+  try {
+    const webhooks = await channel.fetchWebhooks();
+    current = new Map();
+    for (const webhook of webhooks.values()) {
+      current.set(webhook.id, webhook.name ?? 'unknown');
+    }
+  } catch (err) {
+    logger.warn({ err, channelId: channel.id }, 'Failed to fetch webhooks for diffing');
+    return;
+  }
+
+  const previous = webhookCache.get(channel.id);
+  webhookCache.set(channel.id, current);
+
+  if (!previous) {
+    return;
+  }
+
+  for (const [id, name] of current) {
+    if (!previous.has(id)) {
+      void handleSecurityEvent(client, makeEvent(channel.guild.id, 'WEBHOOK_CREATE', 'WEBHOOK', id, { name, channelId: channel.id }));
+    }
+  }
+
+  for (const [id, name] of previous) {
+    if (!current.has(id)) {
+      void handleSecurityEvent(client, makeEvent(channel.guild.id, 'WEBHOOK_DELETE', 'WEBHOOK', id, { name, channelId: channel.id }));
+    }
+  }
 }

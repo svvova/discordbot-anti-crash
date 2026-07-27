@@ -9,6 +9,7 @@ export const client = new Client({
     GatewayIntentBits.GuildModeration,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildExpressions,
+    GatewayIntentBits.GuildWebhooks,
   ],
   partials: [Partials.GuildMember, Partials.User],
 });
