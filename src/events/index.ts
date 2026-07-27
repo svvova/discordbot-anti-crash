@@ -1,5 +1,5 @@
 import { handleSecurityEvent } from '../services/pipeline/pipeline.js';
-import type { Client } from 'discord.js';
+import type { Client, Guild } from 'discord.js';
 import { AuditActionWeights } from '../config/constants.js';
 import type { SecurityEvent } from '../services/audit/types.js';
 import { randomUUID } from 'node:crypto';
@@ -31,6 +31,37 @@ function getChannelName(channel: { name?: string }): string | undefined {
 }
 
 const webhookCache = new Map<string, Map<string, string>>();
+
+interface WebhookCapableChannel {
+  id: string;
+  guild: { id: string };
+  fetchWebhooks: () => Promise<{ values: () => IterableIterator<{ id: string; name: string | null }> }>;
+}
+
+function isWebhookCapable(channel: unknown): channel is WebhookCapableChannel {
+  return (
+    typeof channel === 'object' &&
+    channel !== null &&
+    'fetchWebhooks' in channel &&
+    typeof (channel as { fetchWebhooks?: unknown }).fetchWebhooks === 'function'
+  );
+}
+
+export async function populateWebhookCache(guild: Guild): Promise<void> {
+  for (const channel of guild.channels.cache.values()) {
+    if (!isWebhookCapable(channel)) continue;
+    try {
+      const webhooks = await channel.fetchWebhooks();
+      const map = new Map<string, string>();
+      for (const webhook of webhooks.values()) {
+        map.set(webhook.id, webhook.name ?? 'unknown');
+      }
+      webhookCache.set(channel.id, map);
+    } catch (err) {
+      logger.debug({ err, channelId: channel.id, guildId: guild.id }, 'Failed to prefetch webhooks');
+    }
+  }
+}
 
 export function registerEventHandlers(client: Client): void {
   client.on('guildUpdate', (oldGuild, newGuild) => {
@@ -129,8 +160,8 @@ export function registerEventHandlers(client: Client): void {
   });
 }
 
-async function handleWebhooksUpdate(client: Client, channel: { id: string; guild: { id: string }; fetchWebhooks?: () => Promise<Map<string, { id: string; name: string | null }> | { values: () => IterableIterator<{ id: string; name: string | null }> }> }): Promise<void> {
-  if (typeof channel.fetchWebhooks !== 'function') return;
+async function handleWebhooksUpdate(client: Client, channel: unknown): Promise<void> {
+  if (!isWebhookCapable(channel)) return;
 
   let current: Map<string, string>;
   try {

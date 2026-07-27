@@ -2,6 +2,7 @@ import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import { logger } from './infrastructure/logger.js';
 import type { Command } from './commands/types.js';
 import { createSnapshot } from './services/recovery/snapshot.js';
+import { populateWebhookCache } from './events/index.js';
 
 export const client = new Client({
   intents: [
@@ -28,12 +29,18 @@ client.on('clientReady', () => {
     void createSnapshot(guild, 'GUILD').catch((e) =>
       logger.error({ err: e, guildId: guild.id }, 'Initial guild snapshot failed')
     );
+    void populateWebhookCache(guild).catch((e) =>
+      logger.error({ err: e, guildId: guild.id }, 'Initial webhook cache population failed')
+    );
   }
 });
 
 client.on('guildCreate', (guild) => {
   void createSnapshot(guild, 'GUILD').catch((e) =>
     logger.error({ err: e, guildId: guild.id }, 'Guild create snapshot failed')
+  );
+  void populateWebhookCache(guild).catch((e) =>
+    logger.error({ err: e, guildId: guild.id }, 'Guild create webhook cache population failed')
   );
 });
 
