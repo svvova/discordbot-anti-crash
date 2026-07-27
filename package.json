@@ -20,7 +20,7 @@
     "commands:deploy": "tsx scripts/deploy-commands.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^7.9.0",
     "discord.js": "^14.18.0",
     "dotenv": "^17.4.2",
     "ioredis": "^5.5.0",
