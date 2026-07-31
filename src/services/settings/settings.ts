@@ -23,6 +23,7 @@ function defaultSettings(): ServerSettings {
     adminImmunityEnabled: true,
     ignoreBots: true,
     protectedRoleIds: [],
+    settingsRoleIds: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

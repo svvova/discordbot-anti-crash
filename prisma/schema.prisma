@@ -20,6 +20,7 @@ model ServerSettings {
   adminImmunityEnabled Boolean  @default(true)
   ignoreBots        Boolean  @default(true)
   protectedRoleIds String[] @default([])
+  settingsRoleIds String[] @default([])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

@@ -13,6 +13,7 @@ export function isSupportedLanguage(value: string): value is SupportedLanguage {
 const translations: Record<SupportedLanguage, Record<string, string>> = {
   en: {
     'common.adminOnly': 'Only administrators can use this command.',
+    'common.noAccess': 'You do not have permission to configure settings. Only the server owner, bot owner, or assigned roles can use this command.',
     'errors.commandExecution': 'An error occurred while executing the command.',
 
     'settings.view.title': 'Settings for {guild}',
@@ -26,6 +27,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'settings.view.punishment': 'Punishment',
     'settings.view.timeout': 'Timeout',
     'settings.view.protectedRoles': 'Protected roles',
+    'settings.view.settingsRoles': 'Settings access roles',
     'settings.view.missingBotPerms': 'Missing bot permissions',
     'settings.view.none': 'none',
 
@@ -36,6 +38,13 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.notFound': 'Role {role} is not in the protected list.',
     'protectedRoles.empty': 'no protected roles',
     'protectedRoles.invalidId': 'Invalid role ID or mention.',
+
+    'settingsRoles.title': 'Settings access roles',
+    'settingsRoles.added': 'Role {role} added to settings access.',
+    'settingsRoles.removed': 'Role {role} removed from settings access.',
+    'settingsRoles.alreadyAdded': 'Role {role} already has settings access.',
+    'settingsRoles.notFound': 'Role {role} is not in the settings access list.',
+    'settingsRoles.empty': 'no roles assigned',
 
     'settings.thresholdSet': 'Threshold set to {value}.',
     'settings.thresholdShow': 'Current threshold: {threshold}.',
@@ -85,6 +94,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
   },
   ru: {
     'common.adminOnly': 'Эту команду могут использовать только администраторы.',
+    'common.noAccess': 'У вас нет прав для настройки. Только владелец сервера, создатель бота или назначенные роли могут использовать эту команду.',
     'errors.commandExecution': 'Произошла ошибка при выполнении команды.',
 
     'settings.view.title': 'Настройки {guild}',
@@ -98,6 +108,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'settings.view.punishment': 'Наказание',
     'settings.view.timeout': 'Таймаут',
     'settings.view.protectedRoles': 'Защищённые роли',
+    'settings.view.settingsRoles': 'Роли с доступом к настройкам',
     'settings.view.missingBotPerms': 'Недостающие права бота',
     'settings.view.none': 'нет',
 
@@ -108,6 +119,13 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.notFound': 'Роль {role} не найдена в защищённых.',
     'protectedRoles.empty': 'нет защищённых ролей',
     'protectedRoles.invalidId': 'Неверный ID роли или упоминание.',
+
+    'settingsRoles.title': 'Роли с доступом к настройкам',
+    'settingsRoles.added': 'Роль {role} добавлена в список доступа к настройкам.',
+    'settingsRoles.removed': 'Роль {role} убрана из списка доступа к настройкам.',
+    'settingsRoles.alreadyAdded': 'Роль {role} уже имеет доступ к настройкам.',
+    'settingsRoles.notFound': 'Роль {role} не найдена в списке доступа к настройкам.',
+    'settingsRoles.empty': 'назначенных ролей нет',
 
     'settings.thresholdSet': 'Порог установлен на {value}.',
     'settings.thresholdShow': 'Текущий порог: {threshold}.',
@@ -157,6 +175,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
   },
   uk: {
     'common.adminOnly': 'Цю команду можуть використовувати лише адміністратори.',
+    'common.noAccess': 'Ви не маєте прав для налаштування. Тільки власник сервера, творець бота або призначені ролі можуть використовувати цю команду.',
     'errors.commandExecution': 'Сталася помилка під час виконання команди.',
 
     'settings.view.title': 'Налаштування {guild}',
@@ -170,6 +189,7 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'settings.view.punishment': 'Покарання',
     'settings.view.timeout': 'Таймаут',
     'settings.view.protectedRoles': 'Захищені ролі',
+    'settings.view.settingsRoles': 'Ролі з доступом до налаштувань',
     'settings.view.missingBotPerms': 'Відсутні права бота',
     'settings.view.none': 'немає',
 
@@ -180,6 +200,13 @@ const translations: Record<SupportedLanguage, Record<string, string>> = {
     'protectedRoles.notFound': 'Роль {role} не знайдено у захищених.',
     'protectedRoles.empty': 'немає захищених ролей',
     'protectedRoles.invalidId': 'Неправильний ID ролі або згадка.',
+
+    'settingsRoles.title': 'Ролі з доступом до налаштувань',
+    'settingsRoles.added': 'Роль {role} додано до списку доступу до налаштувань.',
+    'settingsRoles.removed': 'Роль {role} вилучено зі списку доступу до налаштувань.',
+    'settingsRoles.alreadyAdded': 'Роль {role} вже має доступ до налаштувань.',
+    'settingsRoles.notFound': 'Роль {role} не знайдено у списку доступу до налаштувань.',
+    'settingsRoles.empty': 'призначених ролей немає',
 
     'settings.thresholdSet': 'Поріг встановлено на {value}.',
     'settings.thresholdShow': 'Поточний поріг: {threshold}.',

@@ -33,6 +33,11 @@ client.on('clientReady', () => {
       logger.error({ err: e, guildId: guild.id }, 'Initial webhook cache population failed')
     );
   }
+  void client.application?.commands.set(client.commands.map((c) => c.data)).then((cmds) => {
+    logger.info({ count: cmds.size }, 'Slash commands registered globally');
+  }).catch((e) => {
+    logger.error({ err: e }, 'Failed to register slash commands');
+  });
 });
 
 client.on('guildCreate', (guild) => {
